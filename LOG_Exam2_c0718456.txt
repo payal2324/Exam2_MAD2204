@@ -1,0 +1,663 @@
+MariaDB [(none)]> use Exam2_c0718456;
+ERROR 1049 (42000): Unknown database 'exam2_c0718456'
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| examc0718456       |
+| information_schema |
+| mysql              |
+| performance_schema |
+| phpmyadmin         |
+| test               |
+| test1              |
+| testdb             |
++--------------------+
+8 rows in set (0.00 sec)
+
+MariaDB [(none)]> use examc0718456;
+Database changed
+MariaDB [examc0718456]> select e.name, s.* from employee as e join shipment as s where e.name='Turanga Leela ';
++---------------+------------+------------+---------+--------+
+| name          | ShipmentID | Date       | Manager | Planet |
++---------------+------------+------------+---------+--------+
+| Turanga Leela |          1 | 3004-05-11 |       1 |      1 |
+| Turanga Leela |          2 | 3004-05-11 |       1 |      2 |
+| Turanga Leela |          3 | NULL       |       2 |      3 |
+| Turanga Leela |          4 | NULL       |       2 |      4 |
+| Turanga Leela |          5 | NULL       |       7 |      5 |
++---------------+------------+------------+---------+--------+
+5 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> select e.name, s.* from employee as e join shipment as s on e.employeeid =s.manager where e.name='Turanga Leela ';
++---------------+------------+------+---------+--------+
+| name          | ShipmentID | Date | Manager | Planet |
++---------------+------------+------+---------+--------+
+| Turanga Leela |          3 | NULL |       2 |      3 |
+| Turanga Leela |          4 | NULL |       2 |      4 |
++---------------+------------+------+---------+--------+
+2 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> create view v1 as select e.name, s.* from employee as e join shipment as s on e.employeeid =s.manager where e.name='Turanga Leela ';
+Query OK, 0 rows affected (0.03 sec)
+
+MariaDB [examc0718456]> select * from v1;
++---------------+------------+------+---------+--------+
+| name          | ShipmentID | Date | Manager | Planet |
++---------------+------------+------+---------+--------+
+| Turanga Leela |          3 | NULL |       2 |      3 |
+| Turanga Leela |          4 | NULL |       2 |      4 |
++---------------+------------+------+---------+--------+
+2 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> select p.* from package as p join cient as c on c.accountnumber=p.recipient where c.accountnumber in(1,5,6);
+ERROR 1146 (42S02): Table 'examc0718456.cient' doesn't exist
+MariaDB [examc0718456]> select p.* from package as p join client as c on c.accountnumber=p.recipient where c.accountnumber in(1,5,6);
++----------+---------------+------------+--------+--------+-----------+
+| Shipment | PackageNumber | Contents   | Weight | Sender | Recipient |
++----------+---------------+------------+--------+--------+-----------+
+|        3 |             2 | Undeclared |      3 |      5 |         1 |
+|        4 |             1 | Undeclared |      5 |      4 |         5 |
+|        5 |             1 | Undeclared |    100 |      5 |         1 |
++----------+---------------+------------+--------+--------+-----------+
+3 rows in set (0.03 sec)
+
+MariaDB [examc0718456]> create view v2 as select p.* from package as p join client as c on c.accountnumber=p.recipient where c.accountnumber in(1,5,6);
+Query OK, 0 rows affected (0.05 sec)
+
+MariaDB [examc0718456]> select * from v2;
++----------+---------------+------------+--------+--------+-----------+
+| Shipment | PackageNumber | Contents   | Weight | Sender | Recipient |
++----------+---------------+------------+--------+--------+-----------+
+|        3 |             2 | Undeclared |      3 |      5 |         1 |
+|        4 |             1 | Undeclared |      5 |      4 |         5 |
+|        5 |             1 | Undeclared |    100 |      5 |         1 |
++----------+---------------+------------+--------+--------+-----------+
+3 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> @a=select e.name from employee as e join package p on e.name=p.sender where p.weight between 5 and 10;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '@a=select e.name from employee as e join package p on e.name=p.sender where p.we' at line 1
+MariaDB [examc0718456]> @a=select e.name from employee as e join package as  p on e.accountnumber=p.sender where p.weight between 5 and 10;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '@a=select e.name from employee as e join package as  p on e.accountnumber=p.send' at line 1
+MariaDB [examc0718456]> @a :=select e.name from employee as e join package as  p on e.accountnumber=p.sender where p.weight between 5 and 10;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '@a :=select e.name from employee as e join package as  p on e.accountnumber=p.se' at line 1
+MariaDB [examc0718456]> select s.* from shipment as s join planet as p on p.planetid=s.planet where p.name in('Mars','Amazonia');
++------------+------+---------+--------+
+| ShipmentID | Date | Manager | Planet |
++------------+------+---------+--------+
+|          3 | NULL |       2 |      3 |
++------------+------+---------+--------+
+1 row in set (0.00 sec)
+
+MariaDB [examc0718456]> create view v5 as select s.* from shipment as s join planet as p on p.planetid=s.planet where p.name in('Mars','Amazonia');
+Query OK, 0 rows affected (0.06 sec)
+
+MariaDB [examc0718456]> select * from v5;
++------------+------+---------+--------+
+| ShipmentID | Date | Manager | Planet |
++------------+------+---------+--------+
+|          3 | NULL |       2 |      3 |
++------------+------+---------+--------+
+1 row in set (0.00 sec)
+
+MariaDB [examc0718456]> select c.name from client as c join package as p on c.accountnumber=p.recipient where p.contents='undeclared';
++-----------------+
+| name            |
++-----------------+
+| Al Gore's Head  |
+| Barbados Slim   |
+| Ogden Wernstrom |
+| Zapp Brannigan  |
+| Barbados Slim   |
+| Leo Wong        |
+| Al Gore's Head  |
+| Zapp Brannigan  |
++-----------------+
+8 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> create view v6 as select c.name as 'CLIENTS WHOSE PACKAGES ARE UNDECLARED' from client as c join package as p on c.accountnumber=p.recipient where p.contents='undeclared';
+Query OK, 0 rows affected (0.06 sec)
+
+MariaDB [examc0718456]> select * from v6;
++---------------------------------------+
+| CLIENTS WHOSE PACKAGES ARE UNDECLARED |
++---------------------------------------+
+| Al Gore's Head                        |
+| Barbados Slim                         |
+| Ogden Wernstrom                       |
+| Zapp Brannigan                        |
+| Barbados Slim                         |
+| Leo Wong                              |
+| Al Gore's Head                        |
+| Zapp Brannigan                        |
++---------------------------------------+
+8 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> select e.name, e.salary format('$','ar_in') from employee as e;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '('$','ar_in') from employee as e' at line 1
+MariaDB [examc0718456]> select e.name, e.salary as concat('$',e.salary.format('ar_in')) from employee as e;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '('$',e.salary.format('ar_in')) from employee as e' at line 1
+MariaDB [examc0718456]> update employee set Remarks=' Bonus will be given from next month ' where remarks is null ;
+Query OK, 7 rows affected (0.08 sec)
+Rows matched: 7  Changed: 7  Warnings: 0
+
+MariaDB [examc0718456]> select * from employee;
++------------+--------------------------+--------------+--------+-------------------------------------------------------------------------+
+| EmployeeID | Name                     | Position     | Salary | Remarks                                                                 |
++------------+--------------------------+--------------+--------+-------------------------------------------------------------------------+
+|          1 | Phillip J. Fry           | Delivery boy |   7500 | Not to be confused with the Philip J. Fry from Hovering Squid World 97a |
+|          2 | Turanga Leela            | Captain      |  10000 |  Bonus will be given from next month                                    |
+|          3 | Bender Bending Rodriguez | Robot        |   7500 |  Bonus will be given from next month                                    |
+|          4 | Hubert J. Farnsworth     | CEO          |  20000 |  Bonus will be given from next month                                    |
+|          5 | John A. Zoidberg         | Physician    |     25 |  Bonus will be given from next month                                    |
+|          6 | Amy Wong                 | Intern       |   5000 |  Bonus will be given from next month                                    |
+|          7 | Hermes Conrad            | Bureaucrat   |  10000 |  Bonus will be given from next month                                    |
+|          8 | Scruffy Scruffington     | Janitor      |   5000 |  Bonus will be given from next month                                    |
++------------+--------------------------+--------------+--------+-------------------------------------------------------------------------+
+8 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> select * from employee as concat(name , ' is ' , position ,  ' and earns ' , '$' , salary.format(ar_in) , '/month')  ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(name , ' is ' , position ,  ' and earns ' , '$' , salary.format(ar_in) , '/mont' at line 1
+MariaDB [examc0718456]> select from employee e  concat(e.name , ' is ' , e.position ,  ' and earns ' , '$' , e.salary.format(ar_in) , '/month')  ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from employee e  concat(e.name , ' is ' , e.position ,  ' and earns ' , '$' , e.' at line 1
+MariaDB [examc0718456]> select  concat(e.name , ' is ' , e.position ,  ' and earns ' , '$' , e.salary.format(ar_in) , '/month') from employee  ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(ar_in) , '/month') from employee' at line 1
+MariaDB [examc0718456]> select  concat(e.name , ' is ' , e.position ,  ' and earns ' , '$' , e.salary.format(ar_in) , '/month') from employee as e ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(ar_in) , '/month') from employee as e' at line 1
+MariaDB [examc0718456]> select name, concat(' is ') , position from employee;
++--------------------------+----------------+--------------+
+| name                     | concat(' is ') | position     |
++--------------------------+----------------+--------------+
+| Phillip J. Fry           |  is            | Delivery boy |
+| Turanga Leela            |  is            | Captain      |
+| Bender Bending Rodriguez |  is            | Robot        |
+| Hubert J. Farnsworth     |  is            | CEO          |
+| John A. Zoidberg         |  is            | Physician    |
+| Amy Wong                 |  is            | Intern       |
+| Hermes Conrad            |  is            | Bureaucrat   |
+| Scruffy Scruffington     |  is            | Janitor      |
++--------------------------+----------------+--------------+
+8 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> select name concat(' is ')  position from employee;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(' is ')  position from employee' at line 1
+MariaDB [examc0718456]> select concat(name,' is '),  position from employee;
++------------------------------+--------------+
+| concat(name,' is ')          | position     |
++------------------------------+--------------+
+| Phillip J. Fry is            | Delivery boy |
+| Turanga Leela is             | Captain      |
+| Bender Bending Rodriguez is  | Robot        |
+| Hubert J. Farnsworth is      | CEO          |
+| John A. Zoidberg is          | Physician    |
+| Amy Wong is                  | Intern       |
+| Hermes Conrad is             | Bureaucrat   |
+| Scruffy Scruffington is      | Janitor      |
++------------------------------+--------------+
+8 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> select concat(name,' is ',  position, ' and earns $' salary ,'/month') from employee;
+ERROR 1583 (42000): Incorrect parameters in the call to native function 'concat'
+MariaDB [examc0718456]> select concat(name,' is ') concat(position, ' and earns $') , salary  from employee;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(position, ' and earns $') , salary  from employee' at line 1
+MariaDB [examc0718456]> select concat(name,' is ', position from employee;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from employee' at line 1
+MariaDB [examc0718456]> select concat(name,' is ', position) from employee;
++-----------------------------------+
+| concat(name,' is ', position)     |
++-----------------------------------+
+| Phillip J. Fry is Delivery boy    |
+| Turanga Leela is Captain          |
+| Bender Bending Rodriguez is Robot |
+| Hubert J. Farnsworth is CEO       |
+| John A. Zoidberg is Physician     |
+| Amy Wong is Intern                |
+| Hermes Conrad is Bureaucrat       |
+| Scruffy Scruffington is Janitor   |
++-----------------------------------+
+8 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> select concat(name,' is ', position , ' and earns $', salary, '/month') from employee;
++------------------------------------------------------------------+
+| concat(name,' is ', position , ' and earns $', salary, '/month') |
++------------------------------------------------------------------+
+| Phillip J. Fry is Delivery boy and earns $7500/month             |
+| Turanga Leela is Captain and earns $10000/month                  |
+| Bender Bending Rodriguez is Robot and earns $7500/month          |
+| Hubert J. Farnsworth is CEO and earns $20000/month               |
+| John A. Zoidberg is Physician and earns $25/month                |
+| Amy Wong is Intern and earns $5000/month                         |
+| Hermes Conrad is Bureaucrat and earns $10000/month               |
+| Scruffy Scruffington is Janitor and earns $5000/month            |
++------------------------------------------------------------------+
+8 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> create view v9 as  select concat(name,' is ', position , ' and earns $', salary, '/month') from employee;
+Query OK, 0 rows affected (0.03 sec)
+
+MariaDB [examc0718456]> select * from v9;
++------------------------------------------------------------------+
+| concat(name,' is ', position , ' and earns $', salary, '/month') |
++------------------------------------------------------------------+
+| Phillip J. Fry is Delivery boy and earns $7500/month             |
+| Turanga Leela is Captain and earns $10000/month                  |
+| Bender Bending Rodriguez is Robot and earns $7500/month          |
+| Hubert J. Farnsworth is CEO and earns $20000/month               |
+| John A. Zoidberg is Physician and earns $25/month                |
+| Amy Wong is Intern and earns $5000/month                         |
+| Hermes Conrad is Bureaucrat and earns $10000/month               |
+| Scruffy Scruffington is Janitor and earns $5000/month            |
++------------------------------------------------------------------+
+8 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> update shipment set shipmentdate=current_date where shipmentdate is null;
+ERROR 1054 (42S22): Unknown column 'shipmentdate' in 'where clause'
+MariaDB [examc0718456]> select * from shipment;
++------------+------------+---------+--------+
+| ShipmentID | Date       | Manager | Planet |
++------------+------------+---------+--------+
+|          1 | 3004-05-11 |       1 |      1 |
+|          2 | 3004-05-11 |       1 |      2 |
+|          3 | NULL       |       2 |      3 |
+|          4 | NULL       |       2 |      4 |
+|          5 | NULL       |       7 |      5 |
++------------+------------+---------+--------+
+5 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> show create table shipment;
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| shipment | CREATE TABLE `shipment` (
+  `ShipmentID` int(11) NOT NULL,
+  `Date` date DEFAULT NULL,
+  `Manager` int(11) NOT NULL,
+  `Planet` int(11) NOT NULL,
+  PRIMARY KEY (`ShipmentID`),
+  KEY `Manager` (`Manager`),
+  KEY `Planet` (`Planet`),
+  CONSTRAINT `shipment_ibfk_1` FOREIGN KEY (`Manager`) REFERENCES `employee` (`EmployeeID`),
+  CONSTRAINT `shipment_ibfk_2` FOREIGN KEY (`Planet`) REFERENCES `planet` (`PlanetID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 |
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+MariaDB [examc0718456]> update shipment set shipmentdate=current_date where `date is null;
+    `> update shipment set `date=current_date where `date is null;
+    `> ;
+    `> select * from shipment;
+    `> MariaDB [(none)]> update shipment set `date=current_date where `date is null;
+ERROR 1046 (3D000): No database selected
+MariaDB [(none)]> use examc0718456;
+Database changed
+MariaDB [examc0718456]> update shipment set `date=current_date where `date is null;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'date is null' at line 1
+MariaDB [examc0718456]> update shipment set ~date=current_date where ~date is null;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '~date=current_date where ~date is null' at line 1
+MariaDB [examc0718456]> update shipment set ~date=curdate() where ~date is null;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '~date=curdate() where ~date is null' at line 1
+MariaDB [examc0718456]> update shipment set `date=curdate() where `date is null;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'date is null' at line 1
+MariaDB [examc0718456]> update shipment set `date=curdate() where `date ='null';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'date ='null'' at line 1
+MariaDB [examc0718456]> show create table shipment;
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| shipment | CREATE TABLE `shipment` (
+  `ShipmentID` int(11) NOT NULL,
+  `Date` date DEFAULT NULL,
+  `Manager` int(11) NOT NULL,
+  `Planet` int(11) NOT NULL,
+  PRIMARY KEY (`ShipmentID`),
+  KEY `Manager` (`Manager`),
+  KEY `Planet` (`Planet`),
+  CONSTRAINT `shipment_ibfk_1` FOREIGN KEY (`Manager`) REFERENCES `employee` (`EmployeeID`),
+  CONSTRAINT `shipment_ibfk_2` FOREIGN KEY (`Planet`) REFERENCES `planet` (`PlanetID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 |
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+MariaDB [examc0718456]> update shipment set `date=current_date where `date is NULL;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'date is NULL' at line 1
+MariaDB [examc0718456]> update shipment set `date=current_date where date is NULL;
+    `> MariaDB [(none)]> select format(salary,ar_in) from employee;
+ERROR 1046 (3D000): No database selected
+MariaDB [(none)]> use examc0718456;
+Database changed
+MariaDB [examc0718456]> select format(salary,ar_in) from employee;
+ERROR 1054 (42S22): Unknown column 'ar_in' in 'field list'
+MariaDB [examc0718456]> select format(salary,'ar_in') from employee;
++------------------------+
+| format(salary,'ar_in') |
++------------------------+
+| 7,500                  |
+| 10,000                 |
+| 7,500                  |
+| 20,000                 |
+| 25                     |
+| 5,000                  |
+| 10,000                 |
+| 5,000                  |
++------------------------+
+8 rows in set, 8 warnings (0.00 sec)
+
+MariaDB [examc0718456]> select @= format(salary,'ar_in') from employee;
++---------------------------+
+| @= format(salary,'ar_in') |
++---------------------------+
+|                      NULL |
+|                      NULL |
+|                      NULL |
+|                      NULL |
+|                      NULL |
+|                      NULL |
+|                      NULL |
+|                      NULL |
++---------------------------+
+8 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> select @a;
++------+
+| @a   |
++------+
+| NULL |
++------+
+1 row in set (0.00 sec)
+
+MariaDB [examc0718456]> select @
+    -> ;
++------+
+| @    |
++------+
+| NULL |
++------+
+1 row in set (0.00 sec)
+
+MariaDB [examc0718456]> select * from @;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '@' at line 1
+MariaDB [examc0718456]> select @a= Format(salry,'ar_in','.00) from employee;
+    '> MariaDB [(none)]> use examc0718456;
+Database changed
+MariaDB [examc0718456]> select format(salary,ar_in) from employee;
+ERROR 1054 (42S22): Unknown column 'ar_in' in 'field list'
+MariaDB [examc0718456]> select format(salary,'ar_in') from employee;
++------------------------+
+| format(salary,'ar_in') |
++------------------------+
+| 7,500                  |
+| 10,000                 |
+| 7,500                  |
+| 20,000                 |
+| 25                     |
+| 5,000                  |
+| 10,000                 |
+| 5,000                  |
++------------------------+
+8 rows in set, 8 warnings (0.00 sec)
+
+MariaDB [examc0718456]> create view v9 as  select concat(name,' is ', position , ' and earns $',format(salary,'ar_in') ,.00/month') from employee;
+    '> create view v9 as  select concat(name,' is ', position , ' and earns $',format(salary,'ar_in') ,'.00/month') from employee;
+    '> create view v9 as  select concat(name,' is ', position , ' and earns $',format(salary,'ar_in') , '.00/month' ) from employee;
+    '> MariaDB [(none)]> use examc0718456;
+Database changed
+MariaDB [examc0718456]> select Name, format(Salary,'ar_in') from employee;     
++--------------------------+------------------------+
+| Name                     | format(Salary,'ar_in') |
++--------------------------+------------------------+
+| Phillip J. Fry           | 7,500                  |
+| Turanga Leela            | 10,000                 |
+| Bender Bending Rodriguez | 7,500                  |
+| Hubert J. Farnsworth     | 20,000                 |
+| John A. Zoidberg         | 25                     |
+| Amy Wong                 | 5,000                  |
+| Hermes Conrad            | 10,000                 |
+| Scruffy Scruffington     | 5,000                  |
++--------------------------+------------------------+
+8 rows in set, 8 warnings (0.00 sec)
+
+MariaDB [examc0718456]> select Name, format('$', Salary,'ar_in') from employee;     
++--------------------------+----------------------------------+
+| Name                     | format('$', Salary,'ar_in')      |
++--------------------------+----------------------------------+
+| Phillip J. Fry           | 0.000000000000000000000000000000 |
+| Turanga Leela            | 0.000000000000000000000000000000 |
+| Bender Bending Rodriguez | 0.000000000000000000000000000000 |
+| Hubert J. Farnsworth     | 0.000000000000000000000000000000 |
+| John A. Zoidberg         | 0.0000000000000000000000000      |
+| Amy Wong                 | 0.000000000000000000000000000000 |
+| Hermes Conrad            | 0.000000000000000000000000000000 |
+| Scruffy Scruffington     | 0.000000000000000000000000000000 |
++--------------------------+----------------------------------+
+8 rows in set, 8 warnings (0.00 sec)
+
+MariaDB [examc0718456]> select Name,concat('$',format(Salary,'ar_in')) from employee;     
++--------------------------+------------------------------------+
+| Name                     | concat('$',format(Salary,'ar_in')) |
++--------------------------+------------------------------------+
+| Phillip J. Fry           | $7,500                             |
+| Turanga Leela            | $10,000                            |
+| Bender Bending Rodriguez | $7,500                             |
+| Hubert J. Farnsworth     | $20,000                            |
+| John A. Zoidberg         | $25                                |
+| Amy Wong                 | $5,000                             |
+| Hermes Conrad            | $10,000                            |
+| Scruffy Scruffington     | $5,000                             |
++--------------------------+------------------------------------+
+8 rows in set, 8 warnings (0.00 sec)
+
+MariaDB [examc0718456]> select Name,concat('$',format(Salary,'ar_in'),'.00') from employee;     
++--------------------------+------------------------------------------+
+| Name                     | concat('$',format(Salary,'ar_in'),'.00') |
++--------------------------+------------------------------------------+
+| Phillip J. Fry           | $7,500.00                                |
+| Turanga Leela            | $10,000.00                               |
+| Bender Bending Rodriguez | $7,500.00                                |
+| Hubert J. Farnsworth     | $20,000.00                               |
+| John A. Zoidberg         | $25.00                                   |
+| Amy Wong                 | $5,000.00                                |
+| Hermes Conrad            | $10,000.00                               |
+| Scruffy Scruffington     | $5,000.00                                |
++--------------------------+------------------------------------------+
+8 rows in set, 8 warnings (0.00 sec)
+
+MariaDB [examc0718456]> select Name,concat('$',format(Salary,'ar_in'),'.00') as salary from employee;     
++--------------------------+------------+
+| Name                     | salary     |
++--------------------------+------------+
+| Phillip J. Fry           | $7,500.00  |
+| Turanga Leela            | $10,000.00 |
+| Bender Bending Rodriguez | $7,500.00  |
+| Hubert J. Farnsworth     | $20,000.00 |
+| John A. Zoidberg         | $25.00     |
+| Amy Wong                 | $5,000.00  |
+| Hermes Conrad            | $10,000.00 |
+| Scruffy Scruffington     | $5,000.00  |
++--------------------------+------------+
+8 rows in set, 8 warnings (0.00 sec)
+
+MariaDB [examc0718456]> create view v7 as  select Name,concat('$',format(Salary,'ar_in'),'.00') as salary from employee;
+Query OK, 0 rows affected (0.05 sec)
+
+MariaDB [examc0718456]> select * from v7;
++--------------------------+------------+
+| Name                     | salary     |
++--------------------------+------------+
+| Phillip J. Fry           | $7,500.00  |
+| Turanga Leela            | $10,000.00 |
+| Bender Bending Rodriguez | $7,500.00  |
+| Hubert J. Farnsworth     | $20,000.00 |
+| John A. Zoidberg         | $25.00     |
+| Amy Wong                 | $5,000.00  |
+| Hermes Conrad            | $10,000.00 |
+| Scruffy Scruffington     | $5,000.00  |
++--------------------------+------------+
+8 rows in set, 8 warnings (0.00 sec)
+
+MariaDB [examc0718456]>  select concat(name,' is ', position , ' and earns $',format(salary,'ar_in'), '.00/month') from employee;
+ERROR 1271 (HY000): Illegal mix of collations for operation 'concat'
+MariaDB [examc0718456]>  select concat(name,' is ', position , ' and earns $',format(salary,'ar_in'),'.00/month') from employee;
+ERROR 1271 (HY000): Illegal mix of collations for operation 'concat'
+MariaDB [examc0718456]>  select concat(name,' is ', position) concat('$', format(salary,'ar_in'),'.00/month') from employee;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '('$', format(salary,'ar_in'),'.00/month') from employee' at line 1
+MariaDB [examc0718456]>  select concat(name,' is ', position) and concat('$', format(salary,'ar_in'),'.00/month') from employee;
++-----------------------------------------------------------------------------------+
+| concat(name,' is ', position) and concat('$', format(salary,'ar_in'),'.00/month') |
++-----------------------------------------------------------------------------------+
+|                                                                                 0 |
+|                                                                                 0 |
+|                                                                                 0 |
+|                                                                                 0 |
+|                                                                                 0 |
+|                                                                                 0 |
+|                                                                                 0 |
+|                                                                                 0 |
++-----------------------------------------------------------------------------------+
+8 rows in set, 8 warnings (0.00 sec)
+
+MariaDB [examc0718456]>  select concat(name,' is ', position) , concat('$', format(salary,'ar_in'),'.00/month') from employee;
++-----------------------------------+-------------------------------------------------+
+| concat(name,' is ', position)     | concat('$', format(salary,'ar_in'),'.00/month') |
++-----------------------------------+-------------------------------------------------+
+| Phillip J. Fry is Delivery boy    | $7,500.00/month                                 |
+| Turanga Leela is Captain          | $10,000.00/month                                |
+| Bender Bending Rodriguez is Robot | $7,500.00/month                                 |
+| Hubert J. Farnsworth is CEO       | $20,000.00/month                                |
+| John A. Zoidberg is Physician     | $25.00/month                                    |
+| Amy Wong is Intern                | $5,000.00/month                                 |
+| Hermes Conrad is Bureaucrat       | $10,000.00/month                                |
+| Scruffy Scruffington is Janitor   | $5,000.00/month                                 |
++-----------------------------------+-------------------------------------------------+
+8 rows in set, 8 warnings (0.00 sec)
+
+MariaDB [examc0718456]> select @note = concat('$', format(salary,'ar_in'),'.00/month') from employee;
++---------------------------------------------------------+
+| @note = concat('$', format(salary,'ar_in'),'.00/month') |
++---------------------------------------------------------+
+|                                                    NULL |
+|                                                    NULL |
+|                                                    NULL |
+|                                                    NULL |
+|                                                    NULL |
+|                                                    NULL |
+|                                                    NULL |
+|                                                    NULL |
++---------------------------------------------------------+
+8 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> select @n;
++------+
+| @n   |
++------+
+| NULL |
++------+
+1 row in set (0.00 sec)
+
+MariaDB [examc0718456]> create view view9 as  select concat(name,' is ', position , ' and earns $', salary, '/month') as 'Employee Details' from employee;
+Query OK, 0 rows affected (0.06 sec)
+
+MariaDB [examc0718456]> select * from view9;
++---------------------------------------------------------+
+| Employee Details                                        |
++---------------------------------------------------------+
+| Phillip J. Fry is Delivery boy and earns $7500/month    |
+| Turanga Leela is Captain and earns $10000/month         |
+| Bender Bending Rodriguez is Robot and earns $7500/month |
+| Hubert J. Farnsworth is CEO and earns $20000/month      |
+| John A. Zoidberg is Physician and earns $25/month       |
+| Amy Wong is Intern and earns $5000/month                |
+| Hermes Conrad is Bureaucrat and earns $10000/month      |
+| Scruffy Scruffington is Janitor and earns $5000/month   |
++---------------------------------------------------------+
+8 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> alter table shipment rename column date to shipmentdate;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'column date to shipmentdate' at line 1
+MariaDB [examc0718456]> alter table shipment rename  date to shipmentdate;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'to shipmentdate' at line 1
+MariaDB [examc0718456]> update shipment set `date=current_date where `date is null; 
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'date is null' at line 1
+MariaDB [examc0718456]> select * from shipment;
++------------+------------+---------+--------+
+| ShipmentID | Date       | Manager | Planet |
++------------+------------+---------+--------+
+|          1 | 3004-05-11 |       1 |      1 |
+|          2 | 3004-05-11 |       1 |      2 |
+|          3 | NULL       |       2 |      3 |
+|          4 | NULL       |       2 |      4 |
+|          5 | NULL       |       7 |      5 |
++------------+------------+---------+--------+
+5 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> elect current_date;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'elect current_date' at line 1
+MariaDB [examc0718456]> select current_date;
++--------------+
+| current_date |
++--------------+
+| 2017-09-18   |
++--------------+
+1 row in set (0.00 sec)
+
+MariaDB [examc0718456]> select e.name,p.name from employee e join planet p exist (select * from has_clearance); 
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'exist (select * from has_clearance)' at line 1
+MariaDB [examc0718456]> update shipment set shipment.date=current_date where shipment.date is null;
+Query OK, 3 rows affected (0.08 sec)
+Rows matched: 3  Changed: 3  Warnings: 0
+
+MariaDB [examc0718456]> select * from shipment;
++------------+------------+---------+--------+
+| ShipmentID | Date       | Manager | Planet |
++------------+------------+---------+--------+
+|          1 | 3004-05-11 |       1 |      1 |
+|          2 | 3004-05-11 |       1 |      2 |
+|          3 | 2017-09-18 |       2 |      3 |
+|          4 | 2017-09-18 |       2 |      4 |
+|          5 | 2017-09-18 |       7 |      5 |
++------------+------------+---------+--------+
+5 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> select s.date,p.sender, p.reciever from shipment as s , package as p where p.weigth between 5 and 10;
+ERROR 1054 (42S22): Unknown column 'p.reciever' in 'field list'
+MariaDB [examc0718456]> select s.date,p.sender, p.recipient from shipment as s , package as p where p.weigth between 5 and 10;
+ERROR 1054 (42S22): Unknown column 'p.weigth' in 'where clause'
+MariaDB [examc0718456]> select s.date,p.sender, p.recipient from shipment as s , package as p where package.weigth between 5 and 10;
+ERROR 1054 (42S22): Unknown column 'package.weigth' in 'where clause'
+MariaDB [examc0718456]> select s.date,p.sender, p.recipient from shipment as s , package as p on p.sender=s.manager where package.weigth between 5 and 10;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'on p.sender=s.manager where package.weigth between 5 and 10' at line 1
+MariaDB [examc0718456]> select s.date,p.sender, p.recipient from shipment as s join package as p on p.sender=s.manager where package.weigth between 5 and 10;
+ERROR 1054 (42S22): Unknown column 'package.weigth' in 'where clause'
+MariaDB [examc0718456]> select s.date,p.sender, p.recipient from shipment as s join package as p on p.sender=s.manager where weigth between 5 and 10;
+ERROR 1054 (42S22): Unknown column 'weigth' in 'where clause'
+MariaDB [examc0718456]> select s.date,p.sender, p.recipient from shipment as s join package as p on p.sender=s.manager where weight between 5 and 10;
++------------+--------+-----------+
+| date       | sender | recipient |
++------------+--------+-----------+
+| 2017-09-18 |      2 |         3 |
+| 2017-09-18 |      2 |         3 |
+| 2017-09-18 |      2 |         3 |
+| 2017-09-18 |      2 |         3 |
++------------+--------+-----------+
+4 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> create view v4 as select s.date,p.sender , p.recipient from shipment as s join package as p on p.sender=s.manager where weight between 5 and 10;
+Query OK, 0 rows affected (0.03 sec)
+
+MariaDB [examc0718456]> select * from v4;
++------------+--------+-----------+
+| date       | sender | recipient |
++------------+--------+-----------+
+| 2017-09-18 |      2 |         3 |
+| 2017-09-18 |      2 |         3 |
+| 2017-09-18 |      2 |         3 |
+| 2017-09-18 |      2 |         3 |
++------------+--------+-----------+
+4 rows in set (0.00 sec)
+
+MariaDB [examc0718456]> 
+MariaDB [examc0718456]> (select e.name from employee as e  join has_clearance as h  on e.employeeid=h.employee) union  (select p.name from planet s p join has_clearance as h on h.planet=p.planetid) 
+    -> where package.weight between 5 and 10;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'p join has_clearance as h on h.planet=p.planetid) 
+where package.weight between ' at line 1
+MariaDB [examc0718456]> (select e.name from employee as e  join has_clearance as h  on e.employeeid=h.employee) union  (select p.name from planet s p join has_clearance as h on h.planet=p.planetid) where p.weight between 5 and 10;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'p join has_clearance as h on h.planet=p.planetid) where p.weight between 5 and 1' at line 1
